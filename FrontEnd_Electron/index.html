@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <style>
+    html{
+      font-size: large;
+      font-family: 'Segoe UI Light';
+      margin: 0;
+      top: 0;
+      background-color: #efefef;
+    }
+    .center {
+      /* padding: 70px 0; */
+        text-align: center;
+        clear: both;
+    }
+    #comment{
+        padding: 10px;
+    }
+    .chart-container{     
+        position: relative;
+        height: 30vh;
+        width: 60%;
+        padding: 0% 20%;
+    }
+    .button{
+        padding: 10px;
+        text-decoration: none;
+        justify-content: center;
+        font-weight: 500;
+        outline: 0;
+        font-family: 'Segoe UI Light';
+        border-radius: 3px;
+        text-align: center;
+        font-size: small;
+        border-style: none;       
+
+    }
+    .button:hover{
+        transition: 0.2;
+    }
+    #get{
+        background-color:brown;
+        color: whitesmoke;
+    }
+    #get:hover{
+        background-color:maroon;
+    }
+    #clear{
+        background-color:brown;
+        color: whitesmoke;
+        font-size:x-small;
+    }
+    #clear:hover{
+        background-color:maroon;
+    }
+    #radar{
+        width: 50%; /* set width to 50% of page width */
+        float: left; /* Make the element go to the left */
+        position: relative;
+        height: 40vh;
+    }
+    #line{
+        width: 50%;
+        float: right;
+        position: relative;
+        height: 40vh;
+    }
+    </style>
+    <body>
+        <div class = "chart-container">
+            <canvas id="barChart"></canvas>
+        </div>
+        <div class = "center">
+            <p id ="vis"> Please enter your comment below: </p>
+            <div id = "comment" name="comment" contentEditable="true"> </div>
+            <br/>
+            <button id="get" class="button">Check Toxicity</button>
+            <br/>
+        </div>
+        <br/>
+            <div id = "radar"> <canvas id="radarChart"></canvas> </div>
+            <div id = "line"> <canvas id="lineChart"></canvas> </div>
+            
+            <br/>
+            <div class = "center"> 
+                <button id="clear" class="button">Clear History</button>
+            </div>
+            <br/>
+        <script src='./renderer.js'></script>
+        
+    </body>
+</html>

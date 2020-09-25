@@ -1,0 +1,17 @@
+{
+  "name": "toxic-comment-visualization",
+  "version": "1.0.0",
+  "description": "A visualization tool for a toxic comment classification model",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Ray Tang",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^10.1.2"
+  },
+  "dependencies": {
+    "chart.js": "^2.9.3"
+  }
+}
