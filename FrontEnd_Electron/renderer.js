@@ -4,7 +4,12 @@ let labels = ['Toxic', 'Severely Toxic', 'Obscene', 'Threat', 'Insult', 'Identit
 function get(comment) {
     return new Promise ((resolve, reject) => {
         setTimeout(() => {
-            fetch('http://127.0.0.1:5000/'+comment)
+            let formData = new FormData();
+            formData.append("comment", comment);
+            fetch('http://127.0.0.1:5000/', {
+                method: 'post',
+                body: formData
+            })
             .then(res => {
                 resolve(res);
             })
@@ -77,6 +82,37 @@ let barChart = new Chart(ctx, {
     }
 });
 
+let ctxDnt = document.getElementById('donutChart').getContext('2d');
+let donutChart = new Chart(ctxDnt, {
+    type: 'doughnut',
+    data: {
+        labels: labels,
+        datasets: [{
+            data: [],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+    }
+})
 
 let ctxRdr = document.getElementById('radarChart').getContext('2d');
 let radarChart = new Chart(ctxRdr, {
@@ -91,7 +127,7 @@ let radarChart = new Chart(ctxRdr, {
         // legend: {display: false},
         scale: {
             ticks: {
-                startAtZero: true,
+                min: 0,
                 max: 1,
                 // Include a % sign in the ticks
                 callback: function(value, index, values) {
@@ -134,7 +170,9 @@ let lineChart = new Chart(ctxLn, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    max: 1,
+                    max: 1,                    
+                    autoSkip: true,
+                    maxTicksLimit: 10,
                     // Include a % sign in the ticks
                     callback: function(value, index, values) {
                         return toPercent(value,0);
@@ -159,7 +197,7 @@ function addEntry(chart, data, comment) {
     chart.data.labels.push(comment);
     chart.data.datasets[0].data.push(data);
     let r = data*255;
-    pointBackgroundColors.push(`rgba(${r},${255-r},0,1)`)
+    chart.data.datasets[0].pointBackgroundColor.push(`rgba(${r},${255-r},0,1)`)
     chart.update();
 }
 
@@ -207,7 +245,13 @@ btnGet.addEventListener('click', function () {
     .then(res=>{
         let data = [res.toxic, res.severe_toxic, res.obscene, res.threat, res.insult, res.identity_hate];
         editData(barChart, data);//bar
+        editData(donutChart, data);//bar
         total=getAvg(data);
+        //cut off label at 15 chars
+        if (comment.length>15) {
+            comment = comment.substring(0, 13)+"...";
+        }
+
         addData(radarChart, data, comment);//radar
         addEntry(lineChart, total, comment)//line
     })
@@ -222,6 +266,7 @@ btnClear.addEventListener('click', function () {
     barChart.data.datasets[0].data = [];
     barChart.update();
     lineChart.data.datasets[0].data = [];
-    lineChart.data.datasets[0].labels = [];
+    lineChart.data.datasets[0].pointBackgroundColor = [];
+    lineChart.data.labels = [];
     lineChart.update();
 })

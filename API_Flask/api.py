@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask
+from flask import Flask, request
 # required imports
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import tokenizer_from_json 
@@ -39,8 +39,9 @@ def prediction_to_json(pred):
      'identity_hate': str(pred[5])
     }
 
-@app.route('/<comment>')
-def index(comment):
+@app.route('/', methods=['POST'])
+def index():
+    comment=request.form['comment']
     toxic=predict_toxicity(comment)
     return json.dumps(prediction_to_json(toxic))
 

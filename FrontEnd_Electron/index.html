@@ -23,7 +23,7 @@
         padding: 0% 20%;
     }
     .button{
-        padding: 10px;
+        padding: 7px;
         text-decoration: none;
         justify-content: center;
         font-weight: 500;
@@ -48,28 +48,27 @@
     #clear{
         background-color:brown;
         color: whitesmoke;
-        font-size:x-small;
+        font-size:xx-small;
     }
     #clear:hover{
         background-color:maroon;
     }
-    #radar{
+    #lchart{
         width: 50%; /* set width to 50% of page width */
         float: left; /* Make the element go to the left */
         position: relative;
-        height: 40vh;
+        height: 30vh;
     }
-    #line{
+    #rchart{
         width: 50%;
         float: right;
         position: relative;
-        height: 40vh;
+        height: 30vh;
     }
     </style>
     <body>
-        <div class = "chart-container">
-            <canvas id="barChart"></canvas>
-        </div>
+        <div id = "lchart"><canvas id="donutChart"></canvas> </div>
+        <div id = "rchart"><canvas id="barChart"></canvas> </div>
         <div class = "center">
             <p id ="vis"> Please enter your comment below: </p>
             <div id = "comment" name="comment" contentEditable="true"> </div>
@@ -78,14 +77,13 @@
             <br/>
         </div>
         <br/>
-            <div id = "radar"> <canvas id="radarChart"></canvas> </div>
-            <div id = "line"> <canvas id="lineChart"></canvas> </div>
-            
-            <br/>
+        <div id = "lchart" style="height: 35vh"> <canvas id="radarChart"></canvas> </div>
+        <div id = "rchart" style="height: 35vh"> <canvas id="lineChart"></canvas> </div>
+        
+        <br/>
             <div class = "center"> 
                 <button id="clear" class="button">Clear History</button>
             </div>
-            <br/>
         <script src='./renderer.js'></script>
         
     </body>
