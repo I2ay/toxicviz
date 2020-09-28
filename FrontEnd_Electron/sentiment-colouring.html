@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        html{
+          font-size: large;
+          font-family: 'Segoe UI Light';
+          margin: 0;
+          top: 0;
+          background-color: #efefef;
+        }
+        .center {
+          /* padding: 70px 0; */
+            text-align: center;
+            clear: both;
+        }
+        #comment{
+            padding: 10px;
+        }
+        .chart-container{     
+            position: relative;
+            height: 30vh;
+            width: 60%;
+            padding: 0% 20%;
+        }
+        .button{
+            padding: 7px;
+            text-decoration: none;
+            justify-content: center;
+            font-weight: 500;
+            outline: 0;
+            font-family: 'Segoe UI Light';
+            border-radius: 3px;
+            text-align: center;
+            font-size: small;
+            border-style: none;       
+    
+        }
+        .button:hover{
+            transition: 0.2;
+        }
+        #get{
+            background-color:brown;
+            color: whitesmoke;
+        }
+        #get:hover{
+            background-color:maroon;
+        }
+        #clear{
+            background-color:brown;
+            color: whitesmoke;
+            font-size:xx-small;
+        }
+        #clear:hover{
+            background-color:maroon;
+        }
+        #lchart{
+            width: 50%; /* set width to 50% of page width */
+            float: left; /* Make the element go to the left */
+            position: relative;
+            height: 30vh;
+        }
+        #rchart{
+            width: 50%;
+            float: right;
+            position: relative;
+            height: 30vh;
+        }
+        </style>
+<body>
+
+<div class="center">
+    <p id ="vis"> Please enter your comment below: </p>
+    <div type="text" id = "comment" name="comment" contentEditable="true"> </div>
+  <button onclick="stringToArray()" id="get" class="button">Analyse</button>
+    
+</div>
+
+<p id="firstLine"></p>
+
+<script src='./handle-text.js'></script>
+<script src='./renderer.js'></script>
+</body>
+</html>
