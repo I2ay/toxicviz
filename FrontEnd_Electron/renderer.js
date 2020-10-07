@@ -6,7 +6,6 @@ function get(comment) {
         setTimeout(() => {
             let formData = new FormData();
             formData.append("comment", comment);
-            console.log(formData.getAll("comment"));
             fetch('http://127.0.0.1:5000/', {
                 method: 'post',
                 body: formData
@@ -112,6 +111,18 @@ let donutChart = new Chart(ctxDnt, {
     options: {
         responsive: true,
         maintainAspectRatio: false,
+        tooltips: {
+            callbacks: {
+                // Change to %
+                label: function(tooltipItems, data) {
+                    let idx = tooltipItems.index;
+                    let sum = data.datasets[0].data.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+                    let val = parseFloat(data.datasets[0].data[idx]);
+                    let proportion = val/sum;
+                    return data.labels[idx]+": "+toPercent(proportion);
+                }
+            }
+        }
     }
 })
 
@@ -270,4 +281,6 @@ btnClear.addEventListener('click', function () {
     lineChart.data.datasets[0].pointBackgroundColor = [];
     lineChart.data.labels = [];
     lineChart.update();
+    donutChart.data.datasets[0].data= [];
+    donutChart.update();
 })
