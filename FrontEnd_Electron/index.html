@@ -57,13 +57,30 @@
         width: 50%; /* set width to 50% of page width */
         float: left; /* Make the element go to the left */
         position: relative;
-        height: 30vh;
+        height: 28vh;
     }
     #rchart{
         width: 50%;
         float: right;
         position: relative;
-        height: 30vh;
+        height: 28vh;        
+    }
+    /* dropdown */
+    .dropdown {
+    position: relative;
+    display: inline-block;
+    }
+    .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    }
+    .dropdown:hover .dropdown-content {
+    display: block;
     }
     </style>
     <body>
@@ -73,17 +90,23 @@
             <p id ="vis"> Please enter your comment below: </p>
             <div id = "comment" name="comment" contentEditable="true"> </div>
             <br/>
-            <button id="get" class="button">Check Toxicity</button>
+            <button onclick="stringToArray()" id="get" class="button">Analyse</button>
             <br/>
         </div>
         <br/>
-        <div id = "lchart" style="height: 35vh"> <canvas id="radarChart"></canvas> </div>
-        <div id = "rchart" style="height: 35vh"> <canvas id="lineChart"></canvas> </div>
+        <div id = "lchart" style="height: 33vh"> <canvas id="radarChart"></canvas> </div>
+        <div id = "rchart" style="height: 33vh"> <canvas id="lineChart"></canvas> </div>
         
         <br/>
             <div class = "center"> 
+                <br/>
+                <p id="firstLine">
+                </p>
+                <br/>
                 <button id="clear" class="button">Clear History</button>
             </div>
+
+        <script src='./handle-text.js'></script>
         <script src='./renderer.js'></script>
         
     </body>

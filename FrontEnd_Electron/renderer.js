@@ -113,14 +113,17 @@ let donutChart = new Chart(ctxDnt, {
         maintainAspectRatio: false,
         tooltips: {
             callbacks: {
-                // Change to %
-                label: function(tooltipItems, data) {
-                    let idx = tooltipItems.index;
-                    let sum = data.datasets[0].data.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-                    let val = parseFloat(data.datasets[0].data[idx]);
-                    let proportion = val/sum;
-                    return data.labels[idx]+": "+toPercent(proportion);
-                }
+              label: function(tooltipItem, data) {
+                var dataset = data.datasets[tooltipItem.datasetIndex];
+                var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+                var total = meta.total;
+                var currentValue = dataset.data[tooltipItem.index];
+                var percentage = parseFloat((currentValue/total*100).toFixed(1));
+                return toPercent(currentValue) + ' (' + percentage + '% of total toxicity)';
+              },
+              title: function(tooltipItem, data) {
+                return data.labels[tooltipItem[0].index];
+              }
             }
         }
     }
@@ -283,4 +286,6 @@ btnClear.addEventListener('click', function () {
     lineChart.update();
     donutChart.data.datasets[0].data= [];
     donutChart.update();
+    document.getElementById("firstLine").innerHTML = "";
+    document.getElementById("comment").innerHTML = "";
 })
