@@ -6,6 +6,7 @@ function get(comment) {
         setTimeout(() => {
             let formData = new FormData();
             formData.append("comment", comment);
+            console.log(formData.getAll("comment"));
             fetch('http://127.0.0.1:5000/', {
                 method: 'post',
                 body: formData
@@ -240,7 +241,7 @@ function getAvg(data) {
 const btnGet = document.getElementById('get');
 btnGet.addEventListener('click', function () {
     let comment = document.getElementById("comment").innerHTML
-    get(encodeURIComponent(comment))
+    get(comment)
     .then(res => res.json())
     .then(res=>{
         let data = [res.toxic, res.severe_toxic, res.obscene, res.threat, res.insult, res.identity_hate];

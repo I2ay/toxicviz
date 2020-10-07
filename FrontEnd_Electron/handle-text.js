@@ -22,7 +22,7 @@ function computeToxicity(comment){
     return new Promise(function(resolve){
     
         var toxicity;
-        get(encodeURIComponent(comment))
+        get(comment)
         .then(res => res.json())
         .then(res=>{
             let data = [res.toxic, res.severe_toxic, res.obscene, res.threat, res.insult, res.identity_hate];
