@@ -45,5 +45,12 @@ def index():
     toxic=predict_toxicity(comment)
     return json.dumps(prediction_to_json(toxic))
 
+@app.after_request
+def after_request(response):
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  return response 
+
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">      
+    </head>
+      
+    <style>
+    html{
+      font-size: large;
+      font-family: 'Segoe UI Light';
+      margin: 0;
+      top: 0;
+      background-color: #efefef;
+    }
+    .center {
+      /* padding: 70px 0; */
+        text-align: center;
+        clear: both;
+    }
+    #comment{
+        padding: 10px;
+    }
+    .chart-container{     
+        position: relative;
+        height: 30vh;
+        width: 60%;
+        padding: 0% 20%;
+    }
+    .button{
+        padding: 7px;
+        text-decoration: none;
+        justify-content: center;
+        font-weight: 500;
+        outline: 0;
+        font-family: 'Segoe UI Light';
+        border-radius: 3px;
+        text-align: center;
+        font-size: small;
+        border-style: none;       
+
+    }
+    .button:hover{
+        transition: 0.2;
+    }
+    #get{
+        background-color:brown;
+        color: whitesmoke;
+    }
+    #get:hover{
+        background-color:maroon;
+    }
+    #clear{
+        background-color:brown;
+        color: whitesmoke;
+        font-size:xx-small;
+    }
+    #clear:hover{
+        background-color:maroon;
+    }
+    #lchart{
+        width: 50%; /* set width to 50% of page width */
+        float: left; /* Make the element go to the left */
+        position: relative;
+        height: 28vh;
+    }
+    #rchart{
+        width: 50%;
+        float: right;
+        position: relative;
+        height: 28vh;        
+    }
+    /* dropdown */
+    .dropdown {
+    position: relative;
+    display: inline-block;
+    }
+    .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    font-size: small;    
+    }
+    .dropdown:hover .dropdown-content {
+    display: block;
+    }
+    </style>
+    <body>
+        <div id = "lchart"><canvas id="donutChart"></canvas> </div>
+        <div id = "rchart"><canvas id="barChart"></canvas> </div>
+        <div class = "center">
+            <p id ="vis"> Please enter your comment below: </p>
+            <div id = "comment" name="comment" contentEditable="true"> </div>
+            <br/>
+            <button onclick="stringToArray()" id="get" class="button">Analyse</button>
+            <br/>
+        </div>
+        <br/>
+        <div id = "lchart" style="height: 33vh"> <canvas id="radarChart"></canvas> </div>
+        <div id = "rchart" style="height: 33vh"> <canvas id="lineChart"></canvas> </div>
+        
+        <br/>
+            <div class = "center"> 
+                <br/>
+                <p id="firstLine">
+                </p>
+                <br/>
+                <button id="clear" class="button">Clear History</button>
+            </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+        <script>
+            function toPercent(str, places=2) {
+                let num = parseFloat(str);
+                str = (num * 100).toFixed(places);
+                return str+'%';
+            }
+
+            async function stringToArray() {
+
+            inputText = getInput();
+
+            // split words into array
+            var inputArray = inputText.split(' '); 
+
+            // Print out array of words
+            for (var i in inputArray){
+                let toxicity = await computeToxicity(inputArray[i]);
+                let toxicity_fmt = "Toxicity: " + toPercent(toxicity[0]) + "<br/>Severe Toxicity: " + toPercent(toxicity[1]) + "<br/>Obscenity: " + toPercent(toxicity[2]) + "<br/>Threat: " + toPercent(toxicity[3]) + "<br/>Insult: " + toPercent(toxicity[4]) + "<br/>Identity Hate: " +toPercent(toxicity[5]); 
+                // console.log(toxicity_fmt);
+                if (toxicity[0]>0.5){
+                    document.getElementById("firstLine").innerHTML += "<div class='dropdown'><span style='color: #FF0000;'>" + inputArray[i] + " </span> <div class='dropdown-content'><p>"+toxicity_fmt+"</p></div></div>";
+                    console.log(document.getElementById("firstLine").innerHTML)
+                }
+                else{
+                    document.getElementById("firstLine").innerHTML += inputArray[i];
+                }
+                document.getElementById("firstLine").innerHTML += " ";
+            }
+            }
+
+            function computeToxicity(comment){
+            return new Promise(function(resolve){
+
+                var toxicity;
+                get(comment)
+                .then(res => res.json())
+                .then(res=>{
+                    let data = [res.toxic, res.severe_toxic, res.obscene, res.threat, res.insult, res.identity_hate];
+                    toxicity = data;
+                    resolve(toxicity);
+                })
+                .catch(err=>{
+                    console.log(err)
+                }) 
+                
+            })
+
+            }
+            // Returns text from textbox
+            function getInput() {
+            return document.getElementById("comment").innerHTML;
+            }
+
+        </script>
+        <script>
+            
+
+// let Chart = require('chart.js');
+let labels = ['Toxic', 'Severely Toxic', 'Obscene', 'Threat', 'Insult', 'Identity Hate'];
+
+function get(comment) {
+    return new Promise ((resolve, reject) => {
+        setTimeout(() => {
+            let formData = new FormData();
+            formData.append("comment", comment);
+            fetch('http://127.0.0.1:5000/', {
+                method: 'post',
+                body: formData
+            })
+            .then(res => {
+                resolve(res);
+            })
+            .catch(err =>{
+                reject(err);
+            });
+        })
+    })     
+}
+
+
+function toPercent(str, places=2) {
+    let num = parseFloat(str);
+    str = (num * 100).toFixed(places);
+    return str+'%';
+}
+
+let ctx = document.getElementById('barChart').getContext('2d');
+let barChart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+        labels: labels,
+        datasets: [{
+            data: [],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {display: false},
+        scales: {
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    max: 1,
+                    // Include a % sign in the ticks
+                    callback: function(value, index, values) {
+                        return toPercent(value,0);
+                    }
+                }
+            }]
+        },
+        tooltips: {
+            callbacks: {
+                // Change to %
+                label: function(context) {
+                    let value = context.value || '';
+                    
+                    return toPercent(value);
+                }
+            }
+        }
+    }
+});
+
+let ctxDnt = document.getElementById('donutChart').getContext('2d');
+let donutChart = new Chart(ctxDnt, {
+    type: 'doughnut',
+    data: {
+        labels: labels,
+        datasets: [{
+            data: [],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        tooltips: {
+            callbacks: {
+              label: function(tooltipItem, data) {
+                var dataset = data.datasets[tooltipItem.datasetIndex];
+                var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+                var total = meta.total;
+                var currentValue = dataset.data[tooltipItem.index];
+                var percentage = parseFloat((currentValue/total*100).toFixed(1));
+                return toPercent(currentValue) + ' (' + percentage + '% of total toxicity)';
+              },
+              title: function(tooltipItem, data) {
+                return data.labels[tooltipItem[0].index];
+              }
+            }
+        }
+    }
+})
+
+let ctxRdr = document.getElementById('radarChart').getContext('2d');
+let radarChart = new Chart(ctxRdr, {
+    type: 'radar',
+    data: {
+        labels: labels,
+        datasets: []
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        // legend: {display: false},
+        scale: {
+            ticks: {
+                min: 0,
+                max: 1,
+                // Include a % sign in the ticks
+                callback: function(value, index, values) {
+                    return toPercent(value,0);
+                }
+            }
+        },
+        tooltips: {
+            callbacks: {
+                // Change to %
+                label: function(context) {
+                    let value = context.value || '';                    
+                    return labels[context.index]+": "+toPercent(value);
+                },
+                title: function(context, data) {
+                    return data.datasets[context[0].datasetIndex].label;
+                }
+            }
+        }
+    }
+});
+
+let pointBackgroundColors=[];
+let ctxLn = document.getElementById('lineChart').getContext('2d');
+let lineChart = new Chart(ctxLn, {
+    type: 'line',
+    data: {
+        datasets: [{
+            data:[],
+            backgroundColor: "rgba(200,0,0,0.4)",            
+            pointBackgroundColor: pointBackgroundColors,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {display: false},
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    max: 1,                    
+                    autoSkip: true,
+                    maxTicksLimit: 10,
+                    // Include a % sign in the ticks
+                    callback: function(value, index, values) {
+                        return toPercent(value,0);
+                    }
+                }
+            }]
+        },
+        tooltips: {
+            callbacks: {
+                // Change to %
+                label: function(context) {
+                    let value = context.value || '';
+                    
+                    return toPercent(value);
+                }
+            }
+        }
+    }
+});
+
+function addEntry(chart, data, comment) {
+    chart.data.labels.push(comment);
+    chart.data.datasets[0].data.push(data);
+    let r = data*255;
+    chart.data.datasets[0].pointBackgroundColor.push(`rgba(${r},${255-r},0,1)`)
+    chart.update();
+}
+
+
+function addData(chart, data, comment) {
+    let r = getAvg(data)*255;
+    let bgClr =`rgba(${r},${255-r},0,0.2)`;
+    let brdClr =`rgba(${r},${255-r},0,1)`;
+    let dataset = {
+        label: comment,        
+        backgroundColor: bgClr,
+        borderColor: brdClr,
+        data: data
+    }
+    chart.data.datasets.push(dataset);
+    chart.update();
+}
+
+function removeData(chart) {
+    // chart.data.labels.pop();
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data.pop();
+    });
+    chart.update();
+}
+function editData(chart, data) {
+    chart.data.datasets[0].data = data;
+    chart.update();
+}
+
+function getAvg(data) {    
+    let total = 0;
+    for (let i =0; i< data.length; i++) {            
+        let num = parseFloat(data[i]);
+        total+=num;
+    }
+    return total/6;
+}
+
+const btnGet = document.getElementById('get');
+btnGet.addEventListener('click', function () {
+    let element = document.getElementById("comment");
+    let comment = element.innerText || element.textContent;
+    // let comment = document.getElementById("comment").innerHTML.replace(/\n|<.*?>/g,'');
+    console.log(comment);
+    get(comment)
+    .then(res => res.json())
+    .then(res=>{
+        let data = [res.toxic, res.severe_toxic, res.obscene, res.threat, res.insult, res.identity_hate];
+        editData(barChart, data);//bar
+        editData(donutChart, data);//bar
+        total=getAvg(data);
+        //cut off label at 15 chars
+        if (comment.length>15) {
+            comment = comment.substring(0, 13)+"...";
+        }
+
+        addData(radarChart, data, comment);//radar
+        addEntry(lineChart, total, comment)//line
+    })
+    .catch(err=>{
+        console.log(err)
+    })
+})
+const btnClear = document.getElementById('clear');
+btnClear.addEventListener('click', function () {    
+    radarChart.data.datasets = [];
+    radarChart.update();
+    barChart.data.datasets[0].data = [];
+    barChart.update();
+    lineChart.data.datasets[0].data = [];
+    lineChart.data.datasets[0].pointBackgroundColor = [];
+    lineChart.data.labels = [];
+    lineChart.update();
+    donutChart.data.datasets[0].data= [];
+    donutChart.update();
+    document.getElementById("firstLine").innerHTML = "";
+    document.getElementById("comment").innerHTML = "";
+})
+        </script>
+        
+    </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "toxicviz",
+  "version": "1.0.0",
+  "description": "Toxic comment visualisation tool",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Ray Tang, Victoria Chen",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^2.9.4"
+  }
+}
